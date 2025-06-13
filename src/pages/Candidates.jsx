@@ -7,9 +7,8 @@ import { useSelector } from 'react-redux'
 import axios from 'axios'
 import { useState, useEffect } from 'react'
 
-
 export const Candidates = () => {
-  const {id: selectedElection} =useParams()
+  const {id: selectedElection} = useParams()
 
   const voteCandidateModalShowing = useSelector(state => state.ui.voteCandidateModalShowing)
 
@@ -19,48 +18,25 @@ export const Candidates = () => {
   const voterId = useSelector(state => state?.vote?.currentVoter?.voterId)
   const votedElections = useSelector(state => state?.vote?.currentVoter?.votedElections)
 
-  // // get candidates that belong to this election
-  // const candidates = dummyCandidates.filter(candidate => candidate.election === id)
-  
+  // get candidates that belong to this election
   const getCandidates = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/elections/${selectedElection}/candidates`, 
-      {withCredentials: true, headers: {Authorization: `Bearer ${token}`}})
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/elections/${selectedElection}/candidates`,
+        { withCredentials: true, headers: { Authorization: `Bearer ${token}` } }
+      )
       setCandidates(response.data)
     } catch (error) {
       console.log(error)
     }
   }
 
-  // useEffect(() => {
-  //   getCandidates()
-  // }, [])
-
-  // check if voter has already voted
-  // const getVoter = async () => {
-  //   try {
-  //     const response = await axios.get(`${process.env.REACT_APP_API_URL}/voters/${voterId}`, 
-  //     {withCredentials: true, headers: {Authorization: `Bearer ${token}`}})
-  //     const votedElections = await response.data.votedElections;
-  //     if(votedElections.includes(selectedElection)) {
-  //       setCanVote(false)
-  //     }
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-  // }
-
   useEffect(() => {
     getCandidates()
-    //getVoter()
-
-    if(votedElections.includes(selectedElection)) {
+    if (votedElections && votedElections.includes(selectedElection)) {
       setCanVote(false)
     }
-
-
-  }, [])
-
+  }, [selectedElection, votedElections, token])
 
   return (
     <>
@@ -71,8 +47,10 @@ export const Candidates = () => {
               <>
                 <header className="candidates__header">
                   <h1>Vote your candidate</h1>
-                  <p>These are the candidates for the selected election. Please vote once and wisely, because you won't 
-                  be allowed to e in this election again.</p>
+                  <p>
+                    These are the candidates for the selected election. Please vote once and wisely, because you won't 
+                    be allowed to vote in this election again.
+                  </p>
                 </header>
                 <div className="container candidates__container">
                   {candidates.map(candidate => (
