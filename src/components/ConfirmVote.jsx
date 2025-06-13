@@ -40,9 +40,22 @@ const ConfirmVote = ({selectedElection}) => {
         try {
             console.log("selectedVoteCandidate:", selectedVoteCandidate)
             console.log("selectedElection:", selectedElection)
-            console.log("currentVoterId:", currentVoter?._id)
+            console.log("currentVoter:", currentVoter) // اطبع كامل الأوبجكت
+
+            // جرب كل الخيارات الشائعة للـ id
+            const voterId =
+                currentVoter?._id ||
+                currentVoter?.id ||
+                currentVoter?.voterId ||
+                currentVoter?.userId;
+
+            if (!voterId) {
+                alert("خطأ: لم يتم العثور على currentVoterId. تحقق من بيانات المستخدم.");
+                return;
+            }
+
             const formData = new URLSearchParams();
-            formData.append('currentVoterId', currentVoter?._id);
+            formData.append('currentVoterId', voterId);
             formData.append('selectedElection', selectedElection);
 
             const response = await axios.patch(
