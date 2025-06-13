@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { UiActions } from '../store/ui-slice'
 import { voteActions } from '../store/voice-slice'
 
+
 const Election = ({ id, title, description, thumbnail }) => {
   const dispatch = useDispatch()
 
