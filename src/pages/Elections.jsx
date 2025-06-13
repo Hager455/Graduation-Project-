@@ -8,7 +8,11 @@ import { UiActions } from '../store/ui-slice'
 
 
 const Elections = () => {
-  const [elections, setElections] = useState(dummyElections)
+  // استخدم localStorage أو dummyElections
+  const [elections, setElections] = useState(() => {
+    const stored = localStorage.getItem('elections')
+    return stored ? JSON.parse(stored) : dummyElections
+  })
 
   const dispatch = useDispatch()
 
@@ -22,15 +26,27 @@ const Elections = () => {
 
   // Add new election to the list
   const handleElectionCreated = (newElection) => {
-    setElections(prev => [...prev, {
-      id: newElection._id || newElection.id,
-      title: newElection.title,
-      description: newElection.description,
-      thumbnail: newElection.thumbnail,
-      candidates: newElection.candidates || [],
-      voters: newElection.voters || []
-    }])
+    setElections(prev => {
+      const updated = [
+        ...prev,
+        {
+          id: newElection._id || newElection.id,
+          title: newElection.title,
+          description: newElection.description,
+          thumbnail: newElection.thumbnail,
+          candidates: newElection.candidates || [],
+          voters: newElection.voters || []
+        }
+      ]
+      localStorage.setItem('elections', JSON.stringify(updated))
+      return updated
+    })
   }
+
+  // عند كل تغيير في elections، حدث localStorage (لو أضفت طرق أخرى للتعديل)
+  React.useEffect(() => {
+    localStorage.setItem('elections', JSON.stringify(elections))
+  }, [elections])
 
   return (
     <>
