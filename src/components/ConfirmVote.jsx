@@ -7,8 +7,8 @@ import { voteActions } from '../store/voice-slice.js'
 import { useNavigate } from 'react-router-dom'
 
 
-const ConfirmVote = async ({selectedElection}) => {
-    const[modalCandidate, setModalCandidate] = useState({})
+const ConfirmVote = ({selectedElection}) => {
+    const [modalCandidate, setModalCandidate] = useState({})
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -25,11 +25,6 @@ const ConfirmVote = async ({selectedElection}) => {
 
     // get the candidate selected to be voted for
     const fetchCandidate = async () => {
-        // candidates.find(candidate => {
-        //     if(candidate.id === selectedVoteCandidate) {
-        //         setModalCandidate(candidate)
-        //     }
-        // })
         try {
             const response = await axios.get(`${process.env.REACT_APP_API_URL}/candidates/${selectedVoteCandidate}`,
             {withCredentials: true, headers: {Authorization: `Bearer ${token}`}}
@@ -38,22 +33,53 @@ const ConfirmVote = async ({selectedElection}) => {
         } catch (error) {
             console.log(error)
         }
-
     }
-
-
 
     // confirm vote for selected candidate
     const confirmVote = async () => {
-        const response = await axios.patch(`${process.env.REACT_APP_API_URL}/candidates/${selectedVoteCandidate}/${selectedElection}`,
-        {withCredentials: true, headers: {Authorization: `Bearer ${token}`}})
-        const voteResult = await response.data     
-        dispatch(voteActions.changeCurrentVoter({...currentVoter, votedElections: voteResult}))
-        navigate('/congrats')
+        try {
+            console.log("selectedVoteCandidate:", selectedVoteCandidate)
+            console.log("selectedElection:", selectedElection)
+            console.log("currentVoter:", currentVoter) // اطبع كامل الأوبجكت
+
+            // جرب كل الخيارات الشائعة للـ id
+            const voterId =
+                currentVoter?._id ||
+                currentVoter?.id ||
+                currentVoter?.voterId ||
+                currentVoter?.userId;
+
+            if (!voterId) {
+                alert("خطأ: لم يتم العثور على currentVoterId. تحقق من بيانات المستخدم.");
+                return;
+            }
+
+            const formData = new URLSearchParams();
+            formData.append('currentVoterId', voterId);
+            formData.append('selectedElection', selectedElection);
+
+            const response = await axios.patch(
+                `${process.env.REACT_APP_API_URL}/candidates/${selectedVoteCandidate}`,
+                formData,
+                {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                }
+            )
+            const voteResult = await response.data     
+            dispatch(voteActions.changeCurrentVoter({...currentVoter, votedElections: voteResult}))
+            navigate('/congrats')
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     useEffect(() => {
         fetchCandidate()
+        // eslint-disable-next-line
     }, [selectedVoteCandidate, selectedElection])
 
 

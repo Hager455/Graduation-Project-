@@ -13,7 +13,7 @@ export const ErrorPage = () => {
   })
 
   return (
-    <section classname = "errorPage">
+    <section className="errorPage">
       <div className="errorPage_container">
         <img src={Image} alt="Page not found" />
         <h1>404</h1>

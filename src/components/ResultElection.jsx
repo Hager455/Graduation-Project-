@@ -50,7 +50,7 @@ const ResultElection = ({_id: id, thumbnail, title }) => {
         <ul className="results__list">
           {electionCandidates.length > 0 ? (
             electionCandidates.map(candidate => (
-              <CandidateRating key={candidate.id} {...candidate} totalVotes={totalVotes} />
+              <CandidateRating key={candidate._id} {...candidate} totalVotes={totalVotes} />
             ))
           ) : (
             <p>No candidates available for this election.</p>
