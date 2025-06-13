@@ -32,11 +32,12 @@ export const Candidates = () => {
     }
 
     getCandidates()
-    if (votedElections && votedElections.includes(selectedElection)) {
-      setCanVote(false)
-    } else {
-      setCanVote(true)
-    }
+    setCanVote(() => {
+      if (Array.isArray(votedElections) && votedElections.includes(selectedElection)) {
+        return false
+      }
+      return true
+    })
   }, [selectedElection, votedElections, token])
 
   return (
