@@ -38,11 +38,11 @@ const Elections = () => {
   <div className="container">
     <header className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
       <h1 className="mb-3 mb-md-0">Ongoing Elections</h1>
-      <button className="btn btn-primary" onClick={openModal}>Create New Election</button>
+      <button className="btn btn-success" onClick={openModal}>Create New Election</button>
     </header>
     <div className="row g-4">
       {elections.map((election) => (
-        <div key={election.id} className="col-12 col-sm-6 col-md-4 col-lg-3">
+        <div key={election.id} className="col-12 col-sm-6 col-md-4 col-xl-3 mb-4">
           <Election 
             id={election.id}
             title={election.title}
