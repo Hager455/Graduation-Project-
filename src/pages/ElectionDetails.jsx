@@ -58,6 +58,17 @@ export const ElectionDetails = () => {
     dispatch(UiActions.openAddCandidateModal());
   };
 
+  // إعادة تحميل المرشحين بعد إضافة مرشح جديد
+  const handleCandidateAdded = () => {
+    // إعادة تحميل المرشحين فقط
+    fetch(`${process.env.REACT_APP_API_URL}/elections/${id}/candidates`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+      .then(res => res.json())
+      .then(setCandidates)
+      .catch(() => {});
+  };
+
   if (loading) return <div className="container py-5">Loading...</div>;
   if (error) return <div className="container py-5 text-danger">{error}</div>;
   if (!election) return null;
@@ -112,7 +123,7 @@ export const ElectionDetails = () => {
           </menu>
         </div>
       </section>
-      {addCandidateModalShowing && <AddCandidateModal />}
+      {addCandidateModalShowing && <AddCandidateModal currentElection={id} onCandidateAdded={handleCandidateAdded} />}
     </>
   );
 };
