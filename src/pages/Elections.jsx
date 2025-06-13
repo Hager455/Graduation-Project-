@@ -1,20 +1,39 @@
-import React, { useState } from 'react'
-import { elections as dummyElections } from '../data'
+import React, { useState, useEffect } from 'react'
 import Election from '../components/Election'
 import AddElectionModal from '../components/AddElectionModal'
 import UpdateElectionModal from '../components/UpdateElectionModal'
 import { useDispatch, useSelector } from 'react-redux'
 import { UiActions } from '../store/ui-slice'
+import axios from 'axios'
 
 
 const Elections = () => {
-  // استخدم localStorage أو dummyElections
-  const [elections, setElections] = useState(() => {
-    const stored = localStorage.getItem('elections')
-    return stored ? JSON.parse(stored) : dummyElections
-  })
-
+  const [elections, setElections] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
   const dispatch = useDispatch()
+  const token = useSelector(state => state?.vote?.currentVoter?.token)
+
+  // جلب الانتخابات من الـ API
+  const fetchElections = async () => {
+    setLoading(true)
+    setError("")
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/elections`,
+        { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+      )
+      setElections(response.data)
+    } catch (err) {
+      setError("حدث خطأ أثناء جلب الانتخابات")
+    }
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    fetchElections()
+    // eslint-disable-next-line
+  }, [token])
 
   // open add election modal
   const openModal = () =>{
@@ -24,45 +43,15 @@ const Elections = () => {
   const electionModalShowing = useSelector(state => state.ui.electionModalShowing)
   const updateElectionModalShowing = useSelector(state => state.ui.updateElectionModalShowing)
 
-  // Add new election to the list
-  const handleElectionCreated = (newElection) => {
-    setElections(prev => {
-      const updated = [
-        ...prev,
-        {
-          id: newElection._id || newElection.id,
-          title: newElection.title,
-          description: newElection.description,
-          thumbnail: newElection.thumbnail,
-          candidates: newElection.candidates || [],
-          voters: newElection.voters || []
-        }
-      ]
-      localStorage.setItem('elections', JSON.stringify(updated))
-      return updated
-    })
+  // بعد إضافة انتخابات جديدة، أعد جلب القائمة
+  const handleElectionCreated = () => {
+    fetchElections()
   }
 
-  // تحديث بيانات الانتخابات بعد التعديل
-  const handleElectionUpdated = (updatedElection) => {
-    setElections(prev =>
-      prev.map(e =>
-        (e.id === updatedElection._id || e.id === updatedElection.id)
-          ? {
-              ...e,
-              title: updatedElection.title,
-              description: updatedElection.description,
-              thumbnail: updatedElection.thumbnail
-            }
-          : e
-      )
-    )
+  // بعد تحديث انتخابات، أعد جلب القائمة
+  const handleElectionUpdated = () => {
+    fetchElections()
   }
-
-  // عند كل تغيير في elections، حدث localStorage (لو أضفت طرق أخرى للتعديل)
-  React.useEffect(() => {
-    localStorage.setItem('elections', JSON.stringify(elections))
-  }, [elections])
 
   return (
     <>
@@ -72,18 +61,24 @@ const Elections = () => {
       <h1 className="mb-3 mb-md-0">Ongoing Elections</h1>
       <button className="btn btn-success" onClick={openModal}>Create New Election</button>
     </header>
-    <div className="row g-4">
-      {elections.map((election) => (
-        <div key={election.id} className="col-12 col-sm-6 col-md-4 col-xl-3 mb-4">
-          <Election 
-            id={election.id}
-            title={election.title}
-            description={election.description}
-            thumbnail={election.thumbnail}
-          />
-        </div>
-      ))}
-    </div>
+    {loading ? (
+      <div>Loading...</div>
+    ) : error ? (
+      <div className="text-danger">{error}</div>
+    ) : (
+      <div className="row g-4">
+        {elections.map((election) => (
+          <div key={election._id || election.id} className="col-12 col-sm-6 col-md-4 col-xl-3 mb-4">
+            <Election 
+              id={election._id || election.id}
+              title={election.title}
+              description={election.description}
+              thumbnail={election.thumbnail}
+            />
+          </div>
+        ))}
+      </div>
+    )}
   </div>
 </section>
       {electionModalShowing && <AddElectionModal onElectionCreated={handleElectionCreated} />}
