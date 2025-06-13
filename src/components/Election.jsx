@@ -9,7 +9,7 @@ const Election = ({ id, title, description, thumbnail }) => {
 
   // open update 
   const openModal = () => {
-    dispatch(voteActions.changeIdOfCandidateElectionId(id)) // set id for update
+    dispatch(voteActions.changeIdOfElectionToUpdate(id)) // set id for update
     dispatch(UiActions.openUpdateElectionModal())
   }
 
