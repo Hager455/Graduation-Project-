@@ -34,25 +34,26 @@ const Elections = () => {
 
   return (
     <>
-      <section className="elections">
-        <div className="container">
-          <header className="elections__header">
-            <h1>Ongoing Elections</h1>
-            <button className="btn primary" onClick={openModal}>Create New Election</button>
-          </header>
-          <div className="elections__menu">
-            {elections.map((election) => (
-              <Election 
-                key={election.id} 
-                id={election.id}
-                title={election.title}
-                description={election.description}
-                thumbnail={election.thumbnail}
-              />
-            ))}
-          </div>
+<section className="elections py-4">
+  <div className="container">
+    <header className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+      <h1 className="mb-3 mb-md-0">Ongoing Elections</h1>
+      <button className="btn btn-primary" onClick={openModal}>Create New Election</button>
+    </header>
+    <div className="row g-4">
+      {elections.map((election) => (
+        <div key={election.id} className="col-12 col-sm-6 col-md-4 col-lg-3">
+          <Election 
+            id={election.id}
+            title={election.title}
+            description={election.description}
+            thumbnail={election.thumbnail}
+          />
         </div>
-      </section>
+      ))}
+    </div>
+  </div>
+</section>
       {electionModalShowing && <AddElectionModal onElectionCreated={handleElectionCreated} />}
       {updateElectionModalShowing && <UpdateElectionModal />}
     </>
