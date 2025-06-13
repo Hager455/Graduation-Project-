@@ -1,14 +1,13 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 //import {candidates as dummyCandidates } from '../data.js'
 import { useParams } from 'react-router-dom'
 import Candidate from '../components/Candidate'
 import ConfirmVote from '../components/ConfirmVote'
 import { useSelector } from 'react-redux'
 import axios from 'axios'
-import { useState, useEffect } from 'react'
 
 export const Candidates = () => {
-  const {id: selectedElection} = useParams()
+  const { id: selectedElection } = useParams()
 
   const voteCandidateModalShowing = useSelector(state => state.ui.voteCandidateModalShowing)
 
@@ -19,22 +18,24 @@ export const Candidates = () => {
   const votedElections = useSelector(state => state?.vote?.currentVoter?.votedElections)
 
   // get candidates that belong to this election
-  const getCandidates = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/elections/${selectedElection}/candidates`,
-        { withCredentials: true, headers: { Authorization: `Bearer ${token}` } }
-      )
-      setCandidates(response.data)
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
   useEffect(() => {
+    const getCandidates = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/elections/${selectedElection}/candidates`,
+          { withCredentials: true, headers: { Authorization: `Bearer ${token}` } }
+        )
+        setCandidates(response.data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
     getCandidates()
     if (votedElections && votedElections.includes(selectedElection)) {
       setCanVote(false)
+    } else {
+      setCanVote(true)
     }
   }, [selectedElection, votedElections, token])
 
