@@ -41,13 +41,20 @@ const ConfirmVote = ({selectedElection}) => {
             console.log("selectedVoteCandidate:", selectedVoteCandidate)
             console.log("selectedElection:", selectedElection)
             console.log("currentVoterId:", currentVoter?._id)
+            const formData = new URLSearchParams();
+            formData.append('currentVoterId', currentVoter?._id);
+            formData.append('selectedElection', selectedElection);
+
             const response = await axios.patch(
                 `${process.env.REACT_APP_API_URL}/candidates/${selectedVoteCandidate}`,
+                formData,
                 {
-                    currentVoterId: currentVoter?._id,
-                    selectedElection
-                },
-                {withCredentials: true, headers: {Authorization: `Bearer ${token}`}}
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                }
             )
             const voteResult = await response.data     
             dispatch(voteActions.changeCurrentVoter({...currentVoter, votedElections: voteResult}))
