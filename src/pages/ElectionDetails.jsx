@@ -69,6 +69,16 @@ export const ElectionDetails = () => {
       .catch(() => {});
   };
 
+  // إعادة تحميل المرشحين بعد حذف مرشح
+  const handleCandidateDeleted = () => {
+    fetch(`${process.env.REACT_APP_API_URL}/elections/${id}/candidates`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+      .then(res => res.json())
+      .then(setCandidates)
+      .catch(() => {});
+  };
+
   if (loading) return <div className="container py-5">Loading...</div>;
   if (error) return <div className="container py-5 text-danger">{error}</div>;
   if (!election) return null;
@@ -86,7 +96,11 @@ export const ElectionDetails = () => {
           <menu className="electionDetails__candidates">
             {candidates.length > 0 ? (
               candidates.map(candidate => (
-                <ElectionCandidate key={candidate._id || candidate.id} {...candidate} />
+                <ElectionCandidate
+                  key={candidate._id || candidate.id}
+                  {...candidate}
+                  onCandidateDeleted={handleCandidateDeleted}
+                />
               ))
             ) : (
               <p>No candidates for this election.</p>
