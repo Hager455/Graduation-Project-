@@ -2,24 +2,15 @@ import React from 'react'
 import { useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { UiActions } from '../store/ui-slice'
+import { voteActions } from '../store/voice-slice'
+
 
 const Election = ({ id, title, description, thumbnail }) => {
-  // const { election__image, election__content, election__thumbnail, election__title, election__description, election_cta, btn, sm, primary } = {
-  //   election__image: 'election__image',
-  //   election__content: 'election__content',
-  //   election__thumbnail: 'election__thumbnail',
-  //   election__title: 'election__title',
-  //   election__description: 'election__description',
-  //   election_cta: 'election-cta',
-  //   btn: 'btn',
-  //   sm: 'sm',
-  //   primary: 'primary'
-  // };
-
   const dispatch = useDispatch()
 
   // open update 
   const openModal = () => {
+    dispatch(voteActions.changeIdOfElectionToUpdate(id)) // set id for update
     dispatch(UiActions.openUpdateElectionModal())
   }
 
