@@ -43,6 +43,22 @@ const Elections = () => {
     })
   }
 
+  // تحديث بيانات الانتخابات بعد التعديل
+  const handleElectionUpdated = (updatedElection) => {
+    setElections(prev =>
+      prev.map(e =>
+        (e.id === updatedElection._id || e.id === updatedElection.id)
+          ? {
+              ...e,
+              title: updatedElection.title,
+              description: updatedElection.description,
+              thumbnail: updatedElection.thumbnail
+            }
+          : e
+      )
+    )
+  }
+
   // عند كل تغيير في elections، حدث localStorage (لو أضفت طرق أخرى للتعديل)
   React.useEffect(() => {
     localStorage.setItem('elections', JSON.stringify(elections))
@@ -71,7 +87,7 @@ const Elections = () => {
   </div>
 </section>
       {electionModalShowing && <AddElectionModal onElectionCreated={handleElectionCreated} />}
-      {updateElectionModalShowing && <UpdateElectionModal />}
+      {updateElectionModalShowing && <UpdateElectionModal onElectionUpdated={handleElectionUpdated} />}
     </>
   )
 }

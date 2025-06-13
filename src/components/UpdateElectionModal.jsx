@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { UiActions } from '../store/ui-slice'
 import axios from 'axios'
 
-const UpdateElectionModal = () => {
+const UpdateElectionModal = ({ onElectionUpdated }) => {
     const dispatch = useDispatch()
     const [title, setTitle] = useState("")
     const [description, setDescription] = useState("")
@@ -52,7 +52,7 @@ const UpdateElectionModal = () => {
             formData.append('description', description)
             if (thumbnail) formData.append('thumbnail', thumbnail)
 
-            await axios.patch(
+            const res = await axios.patch(
                 `${process.env.REACT_APP_API_URL}/elections/${electionId}`,
                 formData,
                 {
@@ -64,9 +64,11 @@ const UpdateElectionModal = () => {
                 }
             )
             setSuccess("Election updated successfully")
+            if (onElectionUpdated) {
+                onElectionUpdated(res.data)
+            }
             setTimeout(() => {
                 closeModal()
-                window.location.reload() // لتحديث الصفحة بعد التعديل
             }, 1000)
         } catch (err) {
             setError(err.response?.data?.message || "Failed to update election")
