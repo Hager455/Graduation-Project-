@@ -7,8 +7,8 @@ import { voteActions } from '../store/voice-slice.js'
 import { useNavigate } from 'react-router-dom'
 
 
-const ConfirmVote = async ({selectedElection}) => {
-    const[modalCandidate, setModalCandidate] = useState({})
+const ConfirmVote = ({selectedElection}) => {
+    const [modalCandidate, setModalCandidate] = useState({})
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -25,11 +25,6 @@ const ConfirmVote = async ({selectedElection}) => {
 
     // get the candidate selected to be voted for
     const fetchCandidate = async () => {
-        // candidates.find(candidate => {
-        //     if(candidate.id === selectedVoteCandidate) {
-        //         setModalCandidate(candidate)
-        //     }
-        // })
         try {
             const response = await axios.get(`${process.env.REACT_APP_API_URL}/candidates/${selectedVoteCandidate}`,
             {withCredentials: true, headers: {Authorization: `Bearer ${token}`}}
@@ -38,22 +33,25 @@ const ConfirmVote = async ({selectedElection}) => {
         } catch (error) {
             console.log(error)
         }
-
     }
-
-
 
     // confirm vote for selected candidate
     const confirmVote = async () => {
-        const response = await axios.patch(`${process.env.REACT_APP_API_URL}/candidates/${selectedVoteCandidate}/${selectedElection}`,
-        {withCredentials: true, headers: {Authorization: `Bearer ${token}`}})
-        const voteResult = await response.data     
-        dispatch(voteActions.changeCurrentVoter({...currentVoter, votedElections: voteResult}))
-        navigate('/congrats')
+        try {
+            const response = await axios.patch(`${process.env.REACT_APP_API_URL}/candidates/${selectedVoteCandidate}/${selectedElection}`,
+            {}, // PATCH body should be an object, even if empty
+            {withCredentials: true, headers: {Authorization: `Bearer ${token}`}})
+            const voteResult = await response.data     
+            dispatch(voteActions.changeCurrentVoter({...currentVoter, votedElections: voteResult}))
+            navigate('/congrats')
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     useEffect(() => {
         fetchCandidate()
+        // eslint-disable-next-line
     }, [selectedVoteCandidate, selectedElection])
 
 
