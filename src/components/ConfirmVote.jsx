@@ -40,9 +40,13 @@ const ConfirmVote = ({selectedElection}) => {
         try {
             console.log("selectedVoteCandidate:", selectedVoteCandidate)
             console.log("selectedElection:", selectedElection)
+            console.log("currentVoterId:", currentVoter?._id)
             const response = await axios.patch(
-                `${process.env.REACT_APP_API_URL}/candidates/${selectedVoteCandidate}/${selectedElection}`,
-                {},
+                `${process.env.REACT_APP_API_URL}/candidates/${selectedVoteCandidate}`,
+                {
+                    currentVoterId: currentVoter?._id,
+                    selectedElection
+                },
                 {withCredentials: true, headers: {Authorization: `Bearer ${token}`}}
             )
             const voteResult = await response.data     
