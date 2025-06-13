@@ -38,9 +38,13 @@ const ConfirmVote = ({selectedElection}) => {
     // confirm vote for selected candidate
     const confirmVote = async () => {
         try {
-            const response = await axios.patch(`${process.env.REACT_APP_API_URL}/candidates/${selectedVoteCandidate}/${selectedElection}`,
-            {}, // PATCH body should be an object, even if empty
-            {withCredentials: true, headers: {Authorization: `Bearer ${token}`}})
+            console.log("selectedVoteCandidate:", selectedVoteCandidate)
+            console.log("selectedElection:", selectedElection)
+            const response = await axios.patch(
+                `${process.env.REACT_APP_API_URL}/candidates/${selectedVoteCandidate}/${selectedElection}`,
+                {},
+                {withCredentials: true, headers: {Authorization: `Bearer ${token}`}}
+            )
             const voteResult = await response.data     
             dispatch(voteActions.changeCurrentVoter({...currentVoter, votedElections: voteResult}))
             navigate('/congrats')
