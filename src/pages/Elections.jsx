@@ -20,6 +20,17 @@ const Elections = () => {
   const electionModalShowing = useSelector(state => state.ui.electionModalShowing)
   const updateElectionModalShowing = useSelector(state => state.ui.updateElectionModalShowing)
 
+  // Add new election to the list
+  const handleElectionCreated = (newElection) => {
+    setElections(prev => [...prev, {
+      id: newElection._id || newElection.id,
+      title: newElection.title,
+      description: newElection.description,
+      thumbnail: newElection.thumbnail,
+      candidates: newElection.candidates || [],
+      voters: newElection.voters || []
+    }])
+  }
 
   return (
     <>
@@ -42,7 +53,7 @@ const Elections = () => {
           </div>
         </div>
       </section>
-      {electionModalShowing && <AddElectionModal />}
+      {electionModalShowing && <AddElectionModal onElectionCreated={handleElectionCreated} />}
       {updateElectionModalShowing && <UpdateElectionModal />}
     </>
   )
