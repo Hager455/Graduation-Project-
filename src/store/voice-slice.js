@@ -19,8 +19,8 @@ const voteSlice = createSlice({
         changeSelectedElection(state, action){
             state.selectedElection = action.payload;
         },
-        changeIdOfCandidateElectionId(state, action){
-            state.idOfCandidateElectionId = action.payload;
+        changeIdOfElectionToUpdate(state, action){
+            state.idOfElectionToUpdate = action.payload;
         },
         changeAddCandidateElectionId(state, action){
             state.addCandidateElectionId = action.payload;
